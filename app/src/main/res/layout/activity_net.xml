@@ -1,0 +1,33 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}" >
+	<Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="generate"
+        android:id="@+id/generate" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="visit"
+        android:id="@+id/bt"
+        android:layout_below="@id/generate" />
+    <TextView android:id="@+id/show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/bt" 
+        android:layout_marginLeft="20dp" 
+        android:layout_below="@id/generate"
+        android:text="press to visit \nyou have visited 0 times;"
+        />
+
+    <WebView
+        android:id="@+id/web"
+        android:layout_below="@id/bt"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+    </WebView>
+
+</RelativeLayout>
