@@ -275,7 +275,7 @@ public class NetActivity extends Activity {
 						pw.close();
 						handler.sendEmptyMessage(GENERATE_PROXY);
 					 }else{
-						Log.e("ly", "err");
+						Log.e("ly", "err,get servers from local");
 						//Toast.makeText(NetActivity.this,"server error,read local cache servers",Toast.LENGTH_SHORT).show();
 						File fn = new File(Environment.getExternalStorageDirectory().getPath()+File.separator+"proxy-seeds.txt");
 						Scanner sca=new Scanner(fn,"utf-8");
