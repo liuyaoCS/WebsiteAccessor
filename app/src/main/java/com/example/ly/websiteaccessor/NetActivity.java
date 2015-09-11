@@ -243,6 +243,10 @@ public class NetActivity extends Activity {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Message msg=new Message();
+			msg.what=TASK_REFRESH;
+			handler.sendMessage(msg);
+			Log.e("ly", "response err");
 		}finally{
 			//hClient.getConnectionManager().shutdown();
 		}
