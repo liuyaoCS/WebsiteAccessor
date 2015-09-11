@@ -34,6 +34,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -46,6 +47,8 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.umeng.update.UmengUpdateAgent;
 
 public class NetActivity extends Activity {
 	Button visit,generate;
@@ -77,7 +80,11 @@ public class NetActivity extends Activity {
 				break;
 			case TASK_REFRESH:
 				show.setText("connection counts:" + total + "\nyou have successfully visited " + success_num + " times");
+
 				Bundle data=msg.getData();
+				if(data==null || TextUtils.isEmpty(data.getString("url"))){
+					break;
+				}
 				String loc=data.getString("url");
 				String ip=data.getString("ip");
 				int port=Integer.parseInt(data.getString("port"));
@@ -126,6 +133,8 @@ public class NetActivity extends Activity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_net);
+
+		UmengUpdateAgent.update(this);
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
@@ -224,6 +233,9 @@ public class NetActivity extends Activity {
 				handler.sendMessage(msg);
 				//handler.sendEmptyMessage(TASK_REFRESH);
 			}else{
+				Message msg=new Message();
+				msg.what=TASK_REFRESH;
+				handler.sendMessage(msg);
 				Log.e("ly", "response err");
 			}
 			Thread.sleep(TASK_UNIT);
