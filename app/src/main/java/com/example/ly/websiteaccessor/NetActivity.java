@@ -37,6 +37,7 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
@@ -62,7 +63,7 @@ public class NetActivity extends Activity {
 	private final int TASK_FINISH=1;
 	private final int GENERATE_PROXY=2;
 	
-	private final int TASK_UNIT=15*1000;
+	private final int TASK_UNIT=10*1000;
 	private final int TIME_OUT=5*1000;
 	
 	
@@ -123,8 +124,12 @@ public class NetActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.activity_net);
-		
+
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+
 		show=(TextView) findViewById(R.id.show);
 		
 		generate=(Button)findViewById(R.id.generate);
