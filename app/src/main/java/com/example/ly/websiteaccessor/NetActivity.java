@@ -27,8 +27,6 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
 import android.app.Activity;
-import android.content.ComponentName;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -59,7 +57,8 @@ public class NetActivity extends Activity {
 	
 	List<Task> tasks=new ArrayList<Task>();	
 	private int total=0;
-	private int success_num=0;
+	private int success_ping_num =0;
+	private int success_visit_num =0;
 	private int generate_click_count=0;
 
 	private final int TASK_REFRESH=0;
@@ -74,12 +73,14 @@ public class NetActivity extends Activity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case TASK_FINISH:
-				show.setText("done!\nyou have successfully visited "+success_num+" times");
+				show.setText("done!\nyou have successfully visited "+ success_visit_num +" times");
 				total=0;
-				success_num=0;
+				success_ping_num =0;
 				break;
 			case TASK_REFRESH:
-				show.setText("connection counts:" + total + "\nyou have successfully visited " + success_num + " times");
+				show.setText("connection counts:" + total + "" +
+						" ping num= " + success_ping_num+"" +
+						"\nsuccessfully visit num= "+success_visit_num);
 
 				Bundle data=msg.getData();
 				if(data==null || TextUtils.isEmpty(data.getString("url"))){
@@ -158,7 +159,7 @@ public class NetActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				show.setText("visiting...\nyou have successfully visited " + success_num + " times");
+				show.setText("visiting...\nyou have successfully visited " + success_visit_num + " times");
 				for (Task task : tasks) {
 					eService.submit(task);
 				}
@@ -175,6 +176,16 @@ public class NetActivity extends Activity {
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
 				web.loadUrl(url);
 				return true;
+			}
+
+			@Override
+			public void onPageFinished(WebView view, String url) {
+				super.onPageFinished(view, url);
+				success_visit_num++;
+				show.setText("connection counts:" + total + "" +
+						" ping num= " + success_ping_num+"" +
+						"\nsuccessfully visit num= "+success_visit_num);
+
 			}
 		});
 
@@ -222,7 +233,7 @@ public class NetActivity extends Activity {
 			HttpResponse  hResponse=hClient.execute(get);
 			if(hResponse.getStatusLine().getStatusCode()==200){				
 				Log.i("ly", "success"/*,parse ip="+GetNetIp(NetConfig.URL_PARSEIP)*/);
-				success_num++;
+				success_ping_num++;
 				Message msg=new Message();
 				Bundle data=new Bundle();
 				data.putString("ip",ip);
