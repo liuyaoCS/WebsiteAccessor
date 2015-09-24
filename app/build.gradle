@@ -8,8 +8,8 @@ android {
         applicationId "com.example.ly.websiteaccessor"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 20150911
-        versionName "2.1"
+        versionCode 20150924
+        versionName "3.0"
     }
     buildTypes {
         release {

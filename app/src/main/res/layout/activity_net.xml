@@ -4,31 +4,62 @@
     android:layout_height="match_parent"
     tools:context="${relativePackage}.${activityClass}"
     android:keepScreenOn="true">
-	<Button
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="generate"
-        android:id="@+id/generate" />
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="visit"
-        android:id="@+id/bt"
-        android:layout_below="@id/generate" />
-    <TextView android:id="@+id/show"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/bt" 
-        android:layout_marginLeft="20dp" 
-        android:layout_below="@id/generate"
-        android:text="press to visit \nyou have visited 0 times;"
-        />
+        android:background="@drawable/card_bg">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取代理"
+            android:id="@+id/generate" />
+        <TextView android:id="@+id/generate_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/generate"
+            android:layout_marginLeft="10dp"
+            android:text="手机版本：\n代理数量："
+            />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="访问网络"
+            android:id="@+id/bt"
+            android:layout_below="@id/generate" />
+        <TextView android:id="@+id/show"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/bt"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@id/generate"
+            android:text="请求次数：\n成功次数："
+            />
+    </RelativeLayout>
 
-    <WebView
-        android:id="@+id/web"
-        android:layout_below="@id/bt"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content">
-    </WebView>
+  <ScrollView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:layout_below="@id/container"
+      android:layout_marginTop="10dp">
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:orientation="vertical">
+          <WebView
+              android:id="@+id/web"
+              android:layout_width="fill_parent"
+              android:layout_height="200dp"
+              android:layout_margin="10dp">
+          </WebView>
+          <WebView
+              android:id="@+id/web2"
+              android:layout_width="fill_parent"
+              android:layout_height="200dp"
+              android:layout_margin="10dp">
+          </WebView>
+      </LinearLayout>
+  </ScrollView>
+
 
 </RelativeLayout>

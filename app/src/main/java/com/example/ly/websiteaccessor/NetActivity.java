@@ -36,6 +36,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
@@ -43,6 +44,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,8 +52,9 @@ import com.umeng.update.UmengUpdateAgent;
 
 public class NetActivity extends Activity {
 	Button visit,generate;
-	TextView show;
-	WebView web;
+	TextView show,generate_text;
+	WebView web,web2;
+
 	//HttpClient hClient=new DefaultHttpClient();
 	ExecutorService eService=Executors.newSingleThreadExecutor();
 	
@@ -73,14 +76,14 @@ public class NetActivity extends Activity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case TASK_FINISH:
-				show.setText("done!\nyou have successfully visited "+ success_visit_num +" times");
+				show.setText("完成!\n成功次数 "+ success_visit_num);
 				total=0;
 				success_ping_num =0;
 				break;
 			case TASK_REFRESH:
-				show.setText("connection counts:" + total + "" +
-						" ping num= " + success_ping_num+"" +
-						"\nsuccessfully visit num= "+success_visit_num);
+				show.setText("请求次数：" + total + "" +
+						//" ping num= " + success_ping_num+"" +
+						"\n成功次数："+success_visit_num);
 
 				Bundle data=msg.getData();
 				if(data==null || TextUtils.isEmpty(data.getString("url"))){
@@ -90,18 +93,8 @@ public class NetActivity extends Activity {
 				String ip=data.getString("ip");
 				int port=Integer.parseInt(data.getString("port"));
 
-				if(Build.VERSION.SDK_INT== Build.VERSION_CODES.KITKAT){
-					ProxySetting.setKitKatWebViewProxy(web.getContext().getApplicationContext(),ip,port);
-				}else if(Build.VERSION.SDK_INT==Build.VERSION_CODES.JELLY_BEAN){
-					ProxySetting.setProxyICSPlus(web,ip,port,"");
-				}else{
-					Toast.makeText(NetActivity.this,"仅支持android版本4.1-4.4",Toast.LENGTH_LONG).show();
-				}
-
-				//
-				web.clearCache(true);
-				web.clearHistory();
-				web.clearFormData();
+				configWebview(web,ip,port);
+				configWebview(web2,ip,port);
 
 				CookieSyncManager.createInstance(NetActivity.this);
 				CookieSyncManager.getInstance().startSync();
@@ -109,9 +102,10 @@ public class NetActivity extends Activity {
 				CookieManager.getInstance().removeAllCookie();
 
 				web.loadUrl(loc);
+				web2.loadUrl(loc);
 				break;
 			case GENERATE_PROXY:
-				generate.setText("get "+NetConfig.servers.size()+" servers"+"("+Build.VERSION.SDK_INT+")");
+				generate_text.setText("手机版本："+Build.VERSION.SDK_INT+"\n代理数量："+NetConfig.servers.size());
 				for(Server server:NetConfig.servers){
 					Random agents=new Random();
 					int agent_index =agents.nextInt(NetConfig.agents.length);
@@ -141,6 +135,7 @@ public class NetActivity extends Activity {
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
 
 		show=(TextView) findViewById(R.id.show);
+		generate_text=(TextView) findViewById(R.id.generate_text);
 		
 		generate=(Button)findViewById(R.id.generate);
 		generate.setOnClickListener(new OnClickListener() {
@@ -159,14 +154,38 @@ public class NetActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				show.setText("visiting...\nyou have successfully visited " + success_visit_num + " times");
+				show.setText("请求网络...\n成功次数：" + success_visit_num);
 				for (Task task : tasks) {
 					eService.submit(task);
 				}
 				//eService.shutdown();
 			}
 		});
+
+
 		web= (WebView) findViewById(R.id.web);
+		initWebview(web);
+		web2= (WebView) findViewById(R.id.web2);
+		initWebview(web2);
+
+
+	}
+	private void configWebview(WebView web,String ip,int port){
+		if(Build.VERSION.SDK_INT== Build.VERSION_CODES.KITKAT){
+			ProxySetting.setKitKatWebViewProxy(web.getContext().getApplicationContext(),ip,port);
+		}else if(Build.VERSION.SDK_INT==Build.VERSION_CODES.JELLY_BEAN){
+			ProxySetting.setProxyICSPlus(web,ip,port,"");
+		}else{
+			Toast.makeText(NetActivity.this,"仅支持android版本4.1-4.4",Toast.LENGTH_LONG).show();
+		}
+
+		//
+		web.clearCache(true);
+		web.clearHistory();
+		web.clearFormData();
+	}
+
+	private void initWebview(final WebView web){
 		web.getSettings().setJavaScriptEnabled(true);
 		web.getSettings().setUserAgentString(NetConfig.agents[0]);
 		web.getSettings().setAppCacheEnabled(false);
@@ -179,16 +198,24 @@ public class NetActivity extends Activity {
 			}
 
 			@Override
+			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
+
+				super.onReceivedError(view, errorCode, description, failingUrl);
+				Log.i("ly", description);
+				//success_visit_num--;
+			}
+
+			@Override
 			public void onPageFinished(WebView view, String url) {
 				super.onPageFinished(view, url);
-				success_visit_num++;
-				show.setText("connection counts:" + total + "" +
-						" ping num= " + success_ping_num+"" +
-						"\nsuccessfully visit num= "+success_visit_num);
+				Log.i("ly", "finish");
+				//success_visit_num++;
+//				show.setText("请求次数：" + total + "" +
+//						//" ping num= " + success_ping_num+"" +
+//						"\nPV增值："+success_visit_num);
 
 			}
 		});
-
 	}
 
 	@Override
@@ -212,8 +239,8 @@ public class NetActivity extends Activity {
 //		get.setHeader("User-Agent", agent);
 //		get.setHeader("Cache-Control", "no-cache");
 //		get.setHeader("Connection", "close");
-		
-		HttpParams params = new BasicHttpParams(); 
+
+		HttpParams params = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(params, TIME_OUT); //设置连接超时
         HttpConnectionParams.setSoTimeout(params, TIME_OUT); //设置请求超时
         get.setParams(params);
@@ -224,16 +251,31 @@ public class NetActivity extends Activity {
 		
 		total++;
 		int num=NetConfig.servers.size()*NetConfig.urls.length;
-		if(num==total){
+		if(num<=total){
 			handler.sendEmptyMessageDelayed(TASK_FINISH, TASK_UNIT);
 		}
+//		Message msg=new Message();
+//		Bundle data=new Bundle();
+//		data.putString("ip",ip);
+//		data.putString("port", port);
+//		data.putString("url",url);
+//		msg.setData(data);
+//		msg.what=TASK_REFRESH;
+//		handler.sendMessage(msg);
+//
+//		try {
+//			Thread.sleep(TASK_UNIT);
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+
 		HttpClient hClient = null;
 		try {
 			hClient=new DefaultHttpClient();
 			HttpResponse  hResponse=hClient.execute(get);
-			if(hResponse.getStatusLine().getStatusCode()==200){				
+			if(hResponse.getStatusLine().getStatusCode()==200){
 				Log.i("ly", "success"/*,parse ip="+GetNetIp(NetConfig.URL_PARSEIP)*/);
-				success_ping_num++;
+				success_visit_num++;
 				Message msg=new Message();
 				Bundle data=new Bundle();
 				data.putString("ip",ip);
@@ -250,7 +292,7 @@ public class NetActivity extends Activity {
 				Log.e("ly", "response err");
 			}
 			Thread.sleep(TASK_UNIT);
-			
+
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
