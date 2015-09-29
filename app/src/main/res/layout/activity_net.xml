@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/generate"
             android:layout_marginLeft="10dp"
+            android:paddingTop="10dp"
             android:text="手机版本：\n代理数量："
             />
         <Button
@@ -33,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/bt"
             android:layout_marginLeft="10dp"
+            android:paddingTop="15dp"
             android:layout_below="@id/generate"
             android:text="请求次数：\n成功次数："
             />
