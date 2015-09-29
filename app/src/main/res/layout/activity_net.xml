@@ -26,7 +26,8 @@
             android:layout_height="wrap_content"
             android:text="访问网络"
             android:id="@+id/bt"
-            android:layout_below="@id/generate" />
+            android:layout_below="@id/generate"
+            android:layout_marginTop="5dp"/>
         <TextView android:id="@+id/show"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -309,7 +310,11 @@ public class NetActivity extends Activity {
 		new Thread(){
 			public void run() {
 				HttpGet get=new HttpGet(NetConfig.URL_GETPROXY+page);
-				
+				//HttpPost post=new HttpPost(NetConfig.URL_GETPROXY+page);
+				get.setHeader("User-Agent", NetConfig.agents[0]);
+				get.setHeader("Cache-Control", "no-cache");
+
+
 				HttpParams params = new BasicHttpParams(); 
 		        HttpConnectionParams.setConnectionTimeout(params, TIME_OUT); //设置连接超时
 		        HttpConnectionParams.setSoTimeout(params, TIME_OUT); //设置请求超时
