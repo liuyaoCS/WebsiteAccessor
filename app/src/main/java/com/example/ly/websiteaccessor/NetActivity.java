@@ -305,7 +305,7 @@ public class NetActivity extends Activity {
 			//hClient.getConnectionManager().shutdown();
 		}
 	}
-	private void generateProxys(int click_count){
+	private void generateProxys(final int click_count){
 		final int page=click_count;
 		new Thread(){
 			public void run() {
@@ -326,12 +326,19 @@ public class NetActivity extends Activity {
 				FileWriter fw=null;
 				PrintWriter pw=null;
 				try {
-					fw=new FileWriter(file,true);
-					pw=new PrintWriter(fw);
+
 					hClient=new DefaultHttpClient();
 					HttpResponse  hResponse=hClient.execute(get);
-					if(hResponse.getStatusLine().getStatusCode()==200){				
-						 
+					if(hResponse.getStatusLine().getStatusCode()==200){
+
+						if(click_count==1){
+							file.delete();
+							file = new File(directory, "proxy-seeds.txt");
+						}
+
+						fw=new FileWriter(file,true);
+						pw=new PrintWriter(fw);
+
 		                BufferedReader br = new BufferedReader(new InputStreamReader(hResponse.getEntity().getContent(),"utf-8"));
 		                StringBuilder sbBuilder=new StringBuilder();
 		                String line = null;
@@ -340,7 +347,7 @@ public class NetActivity extends Activity {
 		            	   sbBuilder.append(line + "\n"); 	
 		                }
 		                br.close();  
-		                
+
 		                Pattern p = Pattern.compile("(\\d+\\.\\d+\\.\\d+\\.\\d+)[\\s\\S]+?(\\d+)"); 
 		                Matcher m = p.matcher(sbBuilder);  
 		                //NetConfig.servers.clear();
