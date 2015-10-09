@@ -61,13 +61,14 @@ public class NetActivity extends Activity {
 	
 	List<Task> tasks=new ArrayList<Task>();	
 	private int total=0;
-	//private int success_ping_num =0;
+	private int valid_ip_num =-1;
 	private int success_visit_num =0;
 	private int generate_click_count=0;
 
 	private final int TASK_REFRESH=0;
 	private final int TASK_FINISH=1;
 	private final int GENERATE_PROXY=2;
+	private final int TASK_SHOW_VALIDIPNUM=3;
 	
 	private final int TASK_UNIT=10*1000;
 	private final int TIME_OUT=5*1000;
@@ -82,6 +83,9 @@ public class NetActivity extends Activity {
 				total=0;
 				//success_ping_num =0;
 				break;
+				case TASK_SHOW_VALIDIPNUM:
+					generate_text.setText("代理数量："+NetConfig.servers.size() +"\n有效代理："+NetConfig.validIps.size());
+					break;
 			case TASK_REFRESH:
 				show.setText("请求次数：" + total + "" +
 						//" ping num= " + success_ping_num+"" +
@@ -158,22 +162,32 @@ public class NetActivity extends Activity {
 				new Thread(){
 					@Override
 					public void run() {
+						int task_num=0;
 						for (Task task : tasks) {
 							if(NetConfig.badIps.contains(task.mIp)){
+								Log.i("ly", "badIp="+task.mIp+" continue");
 								continue;
 							}else if(NetConfig.validIps.contains(task.mIp)){
+								Log.i("ly", "validIp="+task.mIp+" direct submit");
 								eService.submit(task);
+								task_num++;
 							}else{
 								if(isValidIP(task.mUrl,task.mIp,task.mPort)){
+									Log.i("ly", "check ip="+task.mIp+" valid,submit");
 									eService.submit(task);
+									task_num++;
 									NetConfig.validIps.add(task.mIp);
 								}else{
+									Log.i("ly", "check ip="+task.mIp+" bad,record");
 									NetConfig.badIps.add(task.mIp);
 								}
 							}
-
+							Log.i("ly","task num="+task_num);
 
 						}
+						valid_ip_num=NetConfig.validIps.size();
+						handler.sendEmptyMessageDelayed(TASK_SHOW_VALIDIPNUM, 0);
+
 					}
 				}.start();
 
@@ -227,7 +241,7 @@ public class NetActivity extends Activity {
 			@Override
 			public void onPageFinished(WebView view, String url) {
 				super.onPageFinished(view, url);
-				Log.i("ly", "finish");
+				//Log.i("ly", "finish");
 				//success_visit_num++;
 //				show.setText("请求次数：" + total + "" +
 //						//" ping num= " + success_ping_num+"" +
@@ -245,6 +259,8 @@ public class NetActivity extends Activity {
 	@Override
 	public void onBackPressed() {
 		NetConfig.servers.clear();
+		NetConfig.badIps.clear();
+		NetConfig.validIps.clear();
 		System.setProperty("http.proxyHost", "");
 		System.setProperty("http.proxyPort", "");
 		eService.shutdownNow();
@@ -263,7 +279,7 @@ public class NetActivity extends Activity {
 
 		System.setProperty("http.proxyHost", ip);
 		System.setProperty("http.proxyPort",port);
-		Log.i("ly", "set proxy ip="+ip);
+		//Log.i("ly", "set proxy ip="+ip);
 
 
 		HttpClient hClient = null;
@@ -299,7 +315,7 @@ public class NetActivity extends Activity {
 		Log.i("ly", "set proxy ip="+ip);
 		
 		total++;
-		int num=NetConfig.servers.size()*NetConfig.urls.length;
+		int num=valid_ip_num!=-1?valid_ip_num*NetConfig.urls.length*2:NetConfig.servers.size()*NetConfig.urls.length*2;
 		if(total>=num){
 			handler.sendEmptyMessageDelayed(TASK_FINISH, TASK_UNIT);
 		}
@@ -399,7 +415,13 @@ public class NetActivity extends Activity {
 		                Pattern p = Pattern.compile("(\\d+\\.\\d+\\.\\d+\\.\\d+)[\\s\\S]+?(\\d+)"); 
 		                Matcher m = p.matcher(sbBuilder);  
 		                //NetConfig.servers.clear();
+						int count=0;
 			       		while(m.find()) {
+							if(NetConfig.debug){
+								count++;
+								if(count==6)break;
+							}
+
 							Log.i("ly", "ip:" + m.group(1));
 							Log.i("ly", "port:" + m.group(2));
 							NetConfig.servers.add(new Server(m.group(1), m.group(2)));

@@ -1,7 +1,8 @@
 package com.example.ly.websiteaccessor;
 import java.util.ArrayList;
 
-public class NetConfig {	
+public class NetConfig {
+	public static  final boolean debug=false;
 	public static final String URL_GETPROXY="http://www.xicidaili.com/nn/";
 	public static final String URL_PARSEIP="http://www.cmyip.com/";//"http://www.123cha.com/";
 	
