@@ -21,6 +21,8 @@ public class NetConfig {
 //		"http://www.menglvren123.icoc.cc/about.jsp"
 	};
 	public static ArrayList<Server> servers=new ArrayList<Server>();
+	public static ArrayList<String> badIps=new ArrayList<String>();
+	public static ArrayList<String> validIps=new ArrayList<String>();
 
 	public static String[] agents=new String[]{
 		"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.84 Safari/535.11 LBBROWSER",

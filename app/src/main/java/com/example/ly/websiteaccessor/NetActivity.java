@@ -71,6 +71,7 @@ public class NetActivity extends Activity {
 	
 	private final int TASK_UNIT=10*1000;
 	private final int TIME_OUT=5*1000;
+
 	
 	
 	private  Handler handler=new Handler(){
@@ -114,8 +115,6 @@ public class NetActivity extends Activity {
 						final Task task=new Task(url,NetConfig.agents[agent_index],server.ip,server.port);
 						tasks.add(task);
 					}
-
-
 				}
 				break;
 			default:
@@ -156,9 +155,28 @@ public class NetActivity extends Activity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				show.setText("请求网络...\n成功次数：" + success_visit_num);
-				for (Task task : tasks) {
-					eService.submit(task);
-				}
+				new Thread(){
+					@Override
+					public void run() {
+						for (Task task : tasks) {
+							if(NetConfig.badIps.contains(task.mIp)){
+								continue;
+							}else if(NetConfig.validIps.contains(task.mIp)){
+								eService.submit(task);
+							}else{
+								if(isValidIP(task.mUrl,task.mIp,task.mPort)){
+									eService.submit(task);
+									NetConfig.validIps.add(task.mIp);
+								}else{
+									NetConfig.badIps.add(task.mIp);
+								}
+							}
+
+
+						}
+					}
+				}.start();
+
 				//eService.shutdown();
 			}
 		});
@@ -233,13 +251,43 @@ public class NetActivity extends Activity {
 
 		super.onBackPressed();
 	}
+	private boolean isValidIP(String url,String ip,String port){
+		HttpGet get=new HttpGet(url);
+		get.setHeader("User-Agent", NetConfig.agents[0]);
+		get.setHeader("Cache-Control", "no-cache");
 
-	private void visit(String url,String agent,String ip,String port){
+		HttpParams params = new BasicHttpParams();
+		HttpConnectionParams.setConnectionTimeout(params, TIME_OUT); //设置连接超时
+		HttpConnectionParams.setSoTimeout(params, TIME_OUT); //设置请求超时
+		get.setParams(params);
+
+		System.setProperty("http.proxyHost", ip);
+		System.setProperty("http.proxyPort",port);
+		Log.i("ly", "set proxy ip="+ip);
+
+
+		HttpClient hClient = null;
+		try {
+			hClient=new DefaultHttpClient();
+			HttpResponse  hResponse=hClient.execute(get);
+			if(hResponse.getStatusLine().getStatusCode()==200){
+				return true;
+			}else{
+				return false;
+			}
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	private void visit(String url,String ip,String port){
 		
 		HttpGet get=new HttpGet(url);
-//		get.setHeader("User-Agent", agent);
-//		get.setHeader("Cache-Control", "no-cache");
-//		get.setHeader("Connection", "close");
+		get.setHeader("User-Agent", NetConfig.agents[0]);
+		get.setHeader("Cache-Control", "no-cache");
 
 		HttpParams params = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(params, TIME_OUT); //设置连接超时
@@ -351,10 +399,10 @@ public class NetActivity extends Activity {
 		                Pattern p = Pattern.compile("(\\d+\\.\\d+\\.\\d+\\.\\d+)[\\s\\S]+?(\\d+)"); 
 		                Matcher m = p.matcher(sbBuilder);  
 		                //NetConfig.servers.clear();
-			       		while(m.find()) {  
-				       		Log.i("ly","ip:"+m.group(1));  
-				       		Log.i("ly","port:"+m.group(2));  
-				       		NetConfig.servers.add(new Server(m.group(1), m.group(2)));
+			       		while(m.find()) {
+							Log.i("ly", "ip:" + m.group(1));
+							Log.i("ly", "port:" + m.group(2));
+							NetConfig.servers.add(new Server(m.group(1), m.group(2)));
 							pw.write(m.group(1) + ":" + m.group(2) + " ");
 			       		}
 						pw.flush();
@@ -428,20 +476,18 @@ public class NetActivity extends Activity {
     } 
 	
 	class Task implements Runnable{
-		String mUrl;
-		String mAgent;
-		String mIp;
-		String mPort;
+		public String mUrl;
+		public String mIp;
+		public String mPort;
 		public Task(String url,String agent,String ip,String port){
 			mUrl=url;
-			mAgent=agent;
 			mIp=ip;
 			mPort=port;
 		}
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			visit(mUrl,mAgent,mIp,mPort);
+			visit(mUrl,mIp,mPort);
 		}
 		
 	}
