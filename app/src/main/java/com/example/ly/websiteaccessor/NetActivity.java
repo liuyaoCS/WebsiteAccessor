@@ -61,7 +61,7 @@ public class NetActivity extends Activity {
 	
 	List<Task> tasks=new ArrayList<Task>();	
 	private int total=0;
-	private int success_ping_num =0;
+	//private int success_ping_num =0;
 	private int success_visit_num =0;
 	private int generate_click_count=0;
 
@@ -79,7 +79,7 @@ public class NetActivity extends Activity {
 			case TASK_FINISH:
 				show.setText("完成!\n成功次数 "+ success_visit_num);
 				total=0;
-				success_ping_num =0;
+				//success_ping_num =0;
 				break;
 			case TASK_REFRESH:
 				show.setText("请求次数：" + total + "" +
@@ -252,7 +252,7 @@ public class NetActivity extends Activity {
 		
 		total++;
 		int num=NetConfig.servers.size()*NetConfig.urls.length;
-		if(num<=total){
+		if(total>=num){
 			handler.sendEmptyMessageDelayed(TASK_FINISH, TASK_UNIT);
 		}
 //		Message msg=new Message();
