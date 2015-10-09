@@ -18,6 +18,7 @@ public class NetConfig {
 		"http://app.chinaso.com/chinaso-app/specialTopic/itemAppList/afce3eebe22f4697b2425b5b1ac66ab4"
 
 //		"http://www.menglvren123.icoc.cc/contact.jsp"
+//		"http://www.menglvren123.icoc.cc/about.jsp"
 	};
 	public static ArrayList<Server> servers=new ArrayList<Server>();
 
