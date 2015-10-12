@@ -61,6 +61,12 @@
               android:layout_height="200dp"
               android:layout_margin="10dp">
           </WebView>
+          <WebView
+              android:id="@+id/web3"
+              android:layout_width="fill_parent"
+              android:layout_height="200dp"
+              android:layout_margin="10dp">
+          </WebView>
       </LinearLayout>
   </ScrollView>
 

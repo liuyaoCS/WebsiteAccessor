@@ -54,7 +54,8 @@ import com.umeng.update.UmengUpdateAgent;
 public class NetActivity extends Activity {
 	Button visit,generate;
 	TextView show,generate_text;
-	WebView web,web2;
+	WebView web,web2,web3;
+	int WEB_NUM=3;
 
 	//HttpClient hClient=new DefaultHttpClient();
 	ExecutorService eService=Executors.newSingleThreadExecutor();
@@ -101,6 +102,7 @@ public class NetActivity extends Activity {
 
 				configWebview(web,ip,port);
 				configWebview(web2,ip,port);
+				configWebview(web3,ip,port);
 
 				CookieSyncManager.createInstance(NetActivity.this);
 				CookieSyncManager.getInstance().startSync();
@@ -109,6 +111,7 @@ public class NetActivity extends Activity {
 
 				web.loadUrl(loc);
 				web2.loadUrl(loc);
+				web3.loadUrl(loc);
 				break;
 			case GENERATE_PROXY:
 				generate_text.setText("手机版本："+Build.VERSION.SDK_INT+"\n代理数量："+NetConfig.servers.size());
@@ -197,9 +200,11 @@ public class NetActivity extends Activity {
 
 
 		web= (WebView) findViewById(R.id.web);
-		initWebview(web);
+		initWebview(web,0);
 		web2= (WebView) findViewById(R.id.web2);
-		initWebview(web2);
+		initWebview(web2,1);
+		web3= (WebView) findViewById(R.id.web3);
+		initWebview(web3,2);
 
 
 	}
@@ -218,9 +223,9 @@ public class NetActivity extends Activity {
 		web.clearFormData();
 	}
 
-	private void initWebview(final WebView web){
+	private void initWebview(final WebView web,int agent_index){
 		web.getSettings().setJavaScriptEnabled(true);
-		web.getSettings().setUserAgentString(NetConfig.agents[0]);
+		web.getSettings().setUserAgentString(NetConfig.agents[agent_index]);
 		web.getSettings().setAppCacheEnabled(false);
 		web.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
 		web.setWebViewClient(new WebViewClient() {
@@ -315,7 +320,7 @@ public class NetActivity extends Activity {
 		Log.i("ly", "set proxy ip="+ip);
 		
 		total++;
-		int num=valid_ip_num!=-1?valid_ip_num*NetConfig.urls.length*2:NetConfig.servers.size()*NetConfig.urls.length*2;
+		int num=valid_ip_num!=-1?valid_ip_num*NetConfig.urls.length*WEB_NUM:NetConfig.servers.size()*NetConfig.urls.length*WEB_NUM;
 		if(total>=num){
 			handler.sendEmptyMessageDelayed(TASK_FINISH, TASK_UNIT);
 		}
