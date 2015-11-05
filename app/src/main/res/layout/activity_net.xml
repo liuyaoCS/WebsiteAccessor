@@ -48,6 +48,7 @@
       <LinearLayout
           android:layout_width="match_parent"
           android:layout_height="match_parent"
+          android:id="@+id/webview_container"
           android:orientation="vertical">
           <WebView
               android:id="@+id/web"
@@ -63,6 +64,12 @@
           </WebView>
           <WebView
               android:id="@+id/web3"
+              android:layout_width="fill_parent"
+              android:layout_height="200dp"
+              android:layout_margin="10dp">
+          </WebView>
+          <WebView
+              android:id="@+id/web4"
               android:layout_width="fill_parent"
               android:layout_height="200dp"
               android:layout_margin="10dp">

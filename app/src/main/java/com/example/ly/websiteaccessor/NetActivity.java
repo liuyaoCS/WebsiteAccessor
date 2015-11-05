@@ -45,6 +45,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,8 +55,9 @@ import com.umeng.update.UmengUpdateAgent;
 public class NetActivity extends Activity {
 	Button visit,generate;
 	TextView show,generate_text;
-	WebView web,web2,web3;
-	int WEB_NUM=3;
+	LinearLayout webview_container;
+	//WebView web,web2,web3;
+	int WEB_NUM;
 
 	//HttpClient hClient=new DefaultHttpClient();
 	ExecutorService eService=Executors.newSingleThreadExecutor();
@@ -100,18 +102,30 @@ public class NetActivity extends Activity {
 				String ip=data.getString("ip");
 				int port=Integer.parseInt(data.getString("port"));
 
-				configWebview(web,ip,port);
-				configWebview(web2,ip,port);
-				configWebview(web3,ip,port);
-
 				CookieSyncManager.createInstance(NetActivity.this);
 				CookieSyncManager.getInstance().startSync();
 				CookieManager.getInstance().removeSessionCookie();
 				CookieManager.getInstance().removeAllCookie();
 
-				web.loadUrl(loc);
-				web2.loadUrl(loc);
-				web3.loadUrl(loc);
+				int child_num=webview_container.getChildCount();
+				for(int i=0;i<child_num;i++){
+					WebView web= (WebView) webview_container.getChildAt(i);
+					configWebview(web, ip, port);
+					web.loadUrl(loc);
+				}
+//				configWebview(web,ip,port);
+//				configWebview(web2,ip,port);
+//				configWebview(web3,ip,port);
+
+//				CookieSyncManager.createInstance(NetActivity.this);
+//				CookieSyncManager.getInstance().startSync();
+//				CookieManager.getInstance().removeSessionCookie();
+//				CookieManager.getInstance().removeAllCookie();
+//
+//
+//				web.loadUrl(loc);
+//				web2.loadUrl(loc);
+//				web3.loadUrl(loc);
 				break;
 			case GENERATE_PROXY:
 				generate_text.setText("手机版本："+Build.VERSION.SDK_INT+"\n代理数量："+NetConfig.servers.size());
@@ -137,6 +151,7 @@ public class NetActivity extends Activity {
 		setContentView(R.layout.activity_net);
 
 		UmengUpdateAgent.update(this);
+		UmengUpdateAgent.setDeltaUpdate(false);
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
@@ -198,14 +213,20 @@ public class NetActivity extends Activity {
 			}
 		});
 
+		webview_container= (LinearLayout) findViewById(R.id.webview_container);
+		int child_num=webview_container.getChildCount();
+		WEB_NUM=child_num;
+		for(int i=0;i<child_num;i++){
+			WebView web= (WebView) webview_container.getChildAt(i);
+			initWebview(web,0);
+		}
 
-		web= (WebView) findViewById(R.id.web);
-		initWebview(web,0);
-		web2= (WebView) findViewById(R.id.web2);
-		initWebview(web2,1);
-		web3= (WebView) findViewById(R.id.web3);
-		initWebview(web3,2);
-
+//		web= (WebView) findViewById(R.id.web);
+//		initWebview(web,0);
+//		web2= (WebView) findViewById(R.id.web2);
+//		initWebview(web2,1);
+//		web3= (WebView) findViewById(R.id.web3);
+//		initWebview(web3,2);
 
 	}
 	private void configWebview(WebView web,String ip,int port){
