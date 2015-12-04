@@ -26,7 +26,7 @@ public class NetConfig {
 		"http://app.chinaso.com/chinaso-app/app/category_list?category=%E6%95%99%E8%82%B2%E5%AD%A6%E4%B9%A0&t=1",
 		"http://app.chinaso.com/chinaso-app/app/category_list?category=%E7%81%AB%E7%88%86%E8%AF%95%E5%90%AC&t=1",
 		"http://app.chinaso.com/chinaso-app/app/category_list?category=%E5%8A%A8%E4%BD%9C%E5%B0%84%E5%87%BB&t=2",
-		"http://app.chinaso.com/chinaso-app/app/category_list?category=%E8%B7%91%E9%85%B7%E7%AB%9E%E9%80%9F&t=2",
+		"http://app.chinaso.com/chinaso-app/app/category_list?category=%E8%B7%91%E9%85%B7%E7%AB%9E%E9%80%9F&t=2"
 
 
 //		"http://www.menglvren123.icoc.cc/contact.jsp"

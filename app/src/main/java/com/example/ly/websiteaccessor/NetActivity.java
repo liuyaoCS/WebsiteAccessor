@@ -75,9 +75,9 @@ public class NetActivity extends Activity {
 	
 	private final int TASK_UNIT=10*1000;
 	private final int TIME_OUT=5*1000;
+	
+	int  count=0;
 
-	
-	
 	private  Handler handler=new Handler(){
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
@@ -93,7 +93,8 @@ public class NetActivity extends Activity {
 			case TASK_REFRESH:
 				show.setText("请求次数：" + total + "" +
 						//" ping num= " + success_ping_num+"" +
-						"\n成功次数："+success_visit_num);
+						"\n成功次数："+success_visit_num+
+				" (pv: "+success_visit_num*WEB_NUM+")");
 
 				Bundle data=msg.getData();
 				if(data==null || TextUtils.isEmpty(data.getString("url"))){
@@ -335,14 +336,17 @@ public class NetActivity extends Activity {
 		HttpParams params = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(params, TIME_OUT); //设置连接超时
         HttpConnectionParams.setSoTimeout(params, TIME_OUT); //设置请求超时
-        get.setParams(params);
+		get.setParams(params);
 		
         System.setProperty("http.proxyHost", ip);
 		System.setProperty("http.proxyPort",port);
-		Log.i("ly", "set proxy ip="+ip);
+		Log.i("ly", "set proxy ip=" + ip);
 		
 		total++;
-		int num=valid_ip_num!=-1?valid_ip_num*NetConfig.urls.length*WEB_NUM:NetConfig.servers.size()*NetConfig.urls.length*WEB_NUM;
+		Log.i("ly", "total="+total);
+
+		int num=valid_ip_num!=-1?valid_ip_num*NetConfig.urls.length:NetConfig.servers.size()*NetConfig.urls.length;
+		Log.i("ly", "num="+valid_ip_num*NetConfig.urls.length*WEB_NUM+" ="+num);
 		if(total>=num){
 			handler.sendEmptyMessageDelayed(TASK_FINISH, TASK_UNIT);
 		}
