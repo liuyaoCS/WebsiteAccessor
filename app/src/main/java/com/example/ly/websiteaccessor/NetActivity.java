@@ -84,11 +84,12 @@ public class NetActivity extends Activity {
 			case TASK_FINISH:
 				show.setText("完成!\n成功次数 "+ success_visit_num);
 				total=0;
+				finish();
 				//success_ping_num =0;
 				break;
-				case TASK_SHOW_VALIDIPNUM:
-					generate_text.setText("代理数量："+NetConfig.servers.size() +"\n有效代理："+NetConfig.validIps.size());
-					break;
+			case TASK_SHOW_VALIDIPNUM:
+				generate_text.setText("代理数量："+NetConfig.servers.size() +"\n有效代理："+NetConfig.validIps.size());
+
 			case TASK_REFRESH:
 				show.setText("请求次数：" + total + "" +
 						//" ping num= " + success_ping_num+"" +
@@ -411,8 +412,9 @@ public class NetActivity extends Activity {
 		        get.setParams(params);
 
 		        HttpClient hClient = null;
-				File directory = Environment.getExternalStorageDirectory();
-				File file = new File(directory, "proxy-seeds.txt");
+
+				String filename=FileUtil.getCachePath(NetActivity.this)+File.separator+"proxy-seeds.txt";
+				File file=new File(filename);
 				FileWriter fw=null;
 				PrintWriter pw=null;
 				try {
@@ -423,7 +425,7 @@ public class NetActivity extends Activity {
 
 						if(click_count==1){
 							file.delete();
-							file = new File(directory, "proxy-seeds.txt");
+							file = new File(FileUtil.getCachePath(NetActivity.this)+File.separator+"proxy-seeds.txt");
 						}
 
 						fw=new FileWriter(file,true);
