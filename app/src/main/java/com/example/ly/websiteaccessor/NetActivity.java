@@ -64,7 +64,7 @@ public class NetActivity extends Activity {
 	
 	List<Task> tasks=new ArrayList<Task>();	
 	private int total=0;
-	private int valid_ip_num =-1;
+	private int valid_ip_num =0;
 	private int success_visit_num =0;
 	private int generate_click_count=0;
 
@@ -75,76 +75,8 @@ public class NetActivity extends Activity {
 	
 	private final int TASK_UNIT=10*1000;
 	private final int TIME_OUT=5*1000;
-	
-	int  count=0;
 
-	private  Handler handler=new Handler(){
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case TASK_FINISH:
-				show.setText("完成!\n成功次数 "+ success_visit_num);
-				total=0;
-				finish();
-				//success_ping_num =0;
-				break;
-			case TASK_SHOW_VALIDIPNUM:
-				generate_text.setText("代理数量："+NetConfig.servers.size() +"\n有效代理："+NetConfig.validIps.size());
-
-			case TASK_REFRESH:
-				show.setText("请求次数：" + total + "" +
-						//" ping num= " + success_ping_num+"" +
-						"\n成功次数："+success_visit_num+
-				" (pv: "+success_visit_num*WEB_NUM+")");
-
-				Bundle data=msg.getData();
-				if(data==null || TextUtils.isEmpty(data.getString("url"))){
-					break;
-				}
-				String loc=data.getString("url");
-				String ip=data.getString("ip");
-				int port=Integer.parseInt(data.getString("port"));
-
-				CookieSyncManager.createInstance(NetActivity.this);
-				CookieSyncManager.getInstance().startSync();
-				CookieManager.getInstance().removeSessionCookie();
-				CookieManager.getInstance().removeAllCookie();
-
-				int child_num=webview_container.getChildCount();
-				for(int i=0;i<child_num;i++){
-					WebView web= (WebView) webview_container.getChildAt(i);
-					configWebview(web, ip, port);
-					web.loadUrl(loc);
-				}
-//				configWebview(web,ip,port);
-//				configWebview(web2,ip,port);
-//				configWebview(web3,ip,port);
-
-//				CookieSyncManager.createInstance(NetActivity.this);
-//				CookieSyncManager.getInstance().startSync();
-//				CookieManager.getInstance().removeSessionCookie();
-//				CookieManager.getInstance().removeAllCookie();
-//
-//
-//				web.loadUrl(loc);
-//				web2.loadUrl(loc);
-//				web3.loadUrl(loc);
-				break;
-			case GENERATE_PROXY:
-				generate_text.setText("手机版本："+Build.VERSION.SDK_INT+"\n代理数量："+NetConfig.servers.size());
-				for(Server server:NetConfig.servers){
-					Random agents=new Random();
-					int agent_index =agents.nextInt(NetConfig.agents.length);
-					for(String url:NetConfig.urls){
-						final Task task=new Task(url,NetConfig.agents[agent_index],server.ip,server.port);
-						tasks.add(task);
-					}
-				}
-				break;
-			default:
-				break;
-			}
-		};
-	};
+	private  Handler handler=null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -157,6 +89,64 @@ public class NetActivity extends Activity {
 
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD);
+
+		handler=new Handler(new Handler.Callback() {
+			@Override
+			public boolean handleMessage(Message msg) {
+				switch (msg.what) {
+					case TASK_FINISH:
+						show.setText("完成!\n成功次数 "+ success_visit_num);
+//						total=0;
+//						success_visit_num=0;
+						//finish();
+						//success_ping_num =0;
+						break;
+					case TASK_SHOW_VALIDIPNUM:
+						generate_text.setText("代理数量："+NetConfig.servers.size() +"\n有效代理："+NetConfig.validIps.size());
+
+					case TASK_REFRESH:
+						show.setText("请求次数：" + total + "" +
+								//" ping num= " + success_ping_num+"" +
+								"\n成功次数："+success_visit_num+
+								" (pv: "+success_visit_num*WEB_NUM+")");
+
+						Bundle data=msg.getData();
+						if(data==null || TextUtils.isEmpty(data.getString("url"))){
+							break;
+						}
+						String loc=data.getString("url");
+						String ip=data.getString("ip");
+						int port=Integer.parseInt(data.getString("port"));
+
+						CookieSyncManager.createInstance(NetActivity.this);
+						CookieSyncManager.getInstance().startSync();
+						CookieManager.getInstance().removeSessionCookie();
+						CookieManager.getInstance().removeAllCookie();
+
+						int child_num=webview_container.getChildCount();
+						for(int i=0;i<child_num;i++){
+							WebView web= (WebView) webview_container.getChildAt(i);
+							configWebview(web, ip, port);
+							web.loadUrl(loc);
+						}
+						break;
+					case GENERATE_PROXY:
+						generate_text.setText("手机版本："+Build.VERSION.SDK_INT+"\n代理数量："+NetConfig.servers.size());
+						for(Server server:NetConfig.servers){
+							Random agents=new Random();
+							int agent_index =agents.nextInt(NetConfig.agents.length);
+							for(String url:NetConfig.urls){
+								final Task task=new Task(url,NetConfig.agents[agent_index],server.ip,server.port);
+								tasks.add(task);
+							}
+						}
+						break;
+					default:
+						break;
+				}
+				return true;
+			}
+		});
 
 		show=(TextView) findViewById(R.id.show);
 		generate_text=(TextView) findViewById(R.id.generate_text);
@@ -222,13 +212,6 @@ public class NetActivity extends Activity {
 			WebView web= (WebView) webview_container.getChildAt(i);
 			initWebview(web,0);
 		}
-
-//		web= (WebView) findViewById(R.id.web);
-//		initWebview(web,0);
-//		web2= (WebView) findViewById(R.id.web2);
-//		initWebview(web2,1);
-//		web3= (WebView) findViewById(R.id.web3);
-//		initWebview(web3,2);
 
 	}
 	private void configWebview(WebView web,String ip,int port){
@@ -339,31 +322,17 @@ public class NetActivity extends Activity {
 		get.setParams(params);
 		
         System.setProperty("http.proxyHost", ip);
-		System.setProperty("http.proxyPort",port);
+		System.setProperty("http.proxyPort", port);
 		Log.i("ly", "set proxy ip=" + ip);
 		
 		total++;
 		Log.i("ly", "total="+total);
 
-		int num=valid_ip_num!=-1?valid_ip_num*NetConfig.urls.length:NetConfig.servers.size()*NetConfig.urls.length;
-		Log.i("ly", "num="+valid_ip_num*NetConfig.urls.length*WEB_NUM+" ="+num);
-		if(total>=num){
+		int GOAL=valid_ip_num*NetConfig.urls.length;
+		Log.i("ly", "GOAL="+valid_ip_num*NetConfig.urls.length+" ="+GOAL);
+		if(GOAL>0 && total>=GOAL){
 			handler.sendEmptyMessageDelayed(TASK_FINISH, TASK_UNIT);
 		}
-//		Message msg=new Message();
-//		Bundle data=new Bundle();
-//		data.putString("ip",ip);
-//		data.putString("port", port);
-//		data.putString("url",url);
-//		msg.setData(data);
-//		msg.what=TASK_REFRESH;
-//		handler.sendMessage(msg);
-//
-//		try {
-//			Thread.sleep(TASK_UNIT);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
 
 		HttpClient hClient = null;
 		try {
