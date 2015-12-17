@@ -217,7 +217,8 @@ public class NetActivity extends Activity {
 	private void configWebview(WebView web,String ip,int port){
 		if(Build.VERSION.SDK_INT== Build.VERSION_CODES.KITKAT){
 			ProxySetting.setKitKatWebViewProxy(web.getContext().getApplicationContext(),ip,port);
-		}else if(Build.VERSION.SDK_INT==Build.VERSION_CODES.JELLY_BEAN){
+		}else if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.JELLY_BEAN
+				&& Build.VERSION.SDK_INT<Build.VERSION_CODES.KITKAT){
 			ProxySetting.setProxyICSPlus(web,ip,port,"");
 		}else{
 			Toast.makeText(NetActivity.this,"仅支持android版本4.1-4.4",Toast.LENGTH_LONG).show();
