@@ -9,34 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/card_bg">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="获取代理"
-            android:id="@+id/generate" />
-        <TextView android:id="@+id/generate_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/generate"
-            android:layout_marginLeft="10dp"
-            android:paddingTop="10dp"
-            android:text="手机版本：\n代理数量："
-            />
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="访问网络"
-            android:id="@+id/bt"
-            android:layout_below="@id/generate"
-            android:layout_marginTop="5dp"/>
+
         <TextView android:id="@+id/show"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/bt"
             android:layout_marginLeft="10dp"
-            android:paddingTop="15dp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:layout_below="@id/generate"
-            android:text="请求次数：\n成功次数："
+            android:text="执行：0 / 0"
             />
     </RelativeLayout>
 
@@ -51,37 +32,26 @@
           android:id="@+id/webview_container"
           android:orientation="vertical">
           <WebView
-              android:id="@+id/web"
               android:layout_width="fill_parent"
               android:layout_height="200dp"
               android:layout_margin="10dp">
           </WebView>
           <WebView
-              android:id="@+id/web2"
               android:layout_width="fill_parent"
               android:layout_height="200dp"
               android:layout_margin="10dp">
           </WebView>
           <WebView
-              android:id="@+id/web3"
               android:layout_width="fill_parent"
               android:layout_height="200dp"
               android:layout_margin="10dp">
           </WebView>
           <WebView
-              android:id="@+id/web4"
               android:layout_width="fill_parent"
               android:layout_height="200dp"
               android:layout_margin="10dp">
           </WebView>
           <WebView
-              android:id="@+id/web5"
-              android:layout_width="fill_parent"
-              android:layout_height="200dp"
-              android:layout_margin="10dp">
-          </WebView>
-          <WebView
-              android:id="@+id/web6"
               android:layout_width="fill_parent"
               android:layout_height="200dp"
               android:layout_margin="10dp">

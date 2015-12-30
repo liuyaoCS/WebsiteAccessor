@@ -1,10 +1,6 @@
 package com.example.ly.websiteaccessor;
-import java.util.ArrayList;
 
-public class NetConfig {
-	public static  final boolean debug=false;
-	public static final String URL_GETPROXY="http://www.xicidaili.com/nn/";
-	public static final String URL_PARSEIP="http://www.cmyip.com/";//"http://www.123cha.com/";
+public class URLConfig {
 	
 	public static final String[] urls=new String[]{
 		"http://app.chinaso.com/",
@@ -27,28 +23,7 @@ public class NetConfig {
 		"http://app.chinaso.com/chinaso-app/app/category_list?category=%E7%81%AB%E7%88%86%E8%AF%95%E5%90%AC&t=1",
 		"http://app.chinaso.com/chinaso-app/app/category_list?category=%E5%8A%A8%E4%BD%9C%E5%B0%84%E5%87%BB&t=2",
 		"http://app.chinaso.com/chinaso-app/app/category_list?category=%E8%B7%91%E9%85%B7%E7%AB%9E%E9%80%9F&t=2"
-
-
-//		"http://www.menglvren123.icoc.cc/contact.jsp"
-//		"http://www.menglvren123.icoc.cc/about.jsp"
 	};
-	public static ArrayList<Server> servers=new ArrayList<Server>();
-	public static ArrayList<String> badIps=new ArrayList<String>();
-	public static ArrayList<String> validIps=new ArrayList<String>();
 
-	public static String[] agents=new String[]{
-		"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.84 Safari/535.11 LBBROWSER",
-		"Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; en-us) AppleWebKit/534.50 (KHTML, like Gecko) Version/5.1 Safari/534.50",
-		"Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Trident/5.0",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:2.0.1) Gecko/20100101 Firefox/4.0.1",
-		"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_0) AppleWebKit/535.11 (KHTML, like Gecko) Chrome/17.0.963.56 Safari/535.11"
-	};
 }
-class Server{
-	public String ip;
-	public String port;
-	public Server(String i,String p){
-		ip=i;
-		port=p;
-	}
-}
+
